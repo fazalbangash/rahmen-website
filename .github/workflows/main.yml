@@ -1,0 +1,33 @@
+name: Copy Data to VM
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  copy-data:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Copy Data to VM
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ vars.VM_IP }}
+          username: ${{ vars.USERNAME }}
+          key: ${{ vars.SSH_KEY_NORMAL }}
+          source: "./*"
+          target: "/home/ubuntu"
+      - name: multiple command
+        uses: appleboy/ssh-action@v1.0.1
+        with:
+          host: ${{ vars.VM_IP }}
+          username: ${{ vars.USERNAME }}
+          key: ${{ vars.SSH_KEY_NORMAL }}
+          port: "22"
+          script: |
+            chmod +rx ./startup.sh
+            ./startup.sh
